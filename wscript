@@ -20,10 +20,8 @@ def configure(conf):
     conf.check_waf_version(mini='1.6.11')
     conf.load('compiler_cxx')
 
-    conf.env['DEBUG_MODE'] = conf.options.debug
-
     # Debug Mode
-    if conf.env['DEBUG_MODE']:
+    if conf.options.debug:
         conf.msg('Build mode', 'debug', 'RED')
         conf.env['PREFIX'] = 'install_debug'        # Install Debug Directory
         conf.env.append_value('DEFINES', ['__DEBUG__'])
@@ -60,45 +58,38 @@ def configure(conf):
     conf.write_config_header('config.h')
 
 def build(bld):
-    if bld.env['DEBUG_MODE']:
-        source = bld.path.ant_glob('src/**/*.cpp') + ['test/main.cpp'] 
-        bld(
+    # Install src/*.h
+    includeDir = bld.path.find_dir('src')
+    bld.install_files('${PREFIX}/include/' + LIBNAME + '/' + APPNAME, 
+        includeDir.ant_glob(['**/*.h']), cwd=includeDir, relative_trick=True)
+
+    # Install config.h
+    bld.install_files(
+        '${PREFIX}/include/' + LIBNAME + '/' + APPNAME, ['config.h'])
+
+    source = bld.path.ant_glob('src/**/*.cpp')
+    bld(
+        features = 'cxx cxxstlib',
+        source = source,
+        target = APPNAME,
+        install_path = '${PREFIX}/lib/' + LIBNAME + '/' + APPNAME,
+    )
+    bld(
+        features = 'cxx cxxshlib',
+        source = source,
+        target = APPNAME,
+        install_path = '${PREFIX}/lib/' + LIBNAME + '/' + APPNAME,
+    )
+
+from waflib.Build import BuildContext
+class TestBuild(BuildContext):
+    '''test library'''
+    cmd = 'test'
+
+    def excute(self):
+        source = self.path.ant_glob('src/**/*.cpp') + ['test/main.cpp'] 
+        self(
             features = 'cxx cxxprogram',
             source = source,
-            target = 'debug',
-            install_path = '${PREFIX}',
+            target = 'test',
         )
-    else:
-        # Install src/*.h
-        includeDir = bld.path.find_dir('src')
-        bld.install_files('${PREFIX}/include/' + LIBNAME + '/' + APPNAME, 
-            includeDir.ant_glob(['**/*.h']), cwd=includeDir, relative_trick=True)
-
-        # Install config.h
-        bld.install_files(
-            '${PREFIX}/include/' + LIBNAME + '/' + APPNAME, ['config.h'])
-
-        source = bld.path.ant_glob('src/**/*.cpp')
-        bld(
-            features = 'cxx cxxstlib',
-            source = source,
-            target = APPNAME,
-            install_path = '${PREFIX}/lib/' + LIBNAME + '/' + APPNAME,
-        )
-        bld(
-            features = 'cxx cxxshlib',
-            source = source,
-            target = APPNAME,
-            install_path = '${PREFIX}/lib/' + LIBNAME + '/' + APPNAME,
-        )
-
-### New Command ###############################################################
-from waflib.Context import Context
-
-class ConfigureBuild(Context):
-    '''configure and build a project'''
-    cmd = 'all'
-
-    def execute(self):
-        from waflib import Options
-        Options.commands = ['configure', 'build'] + Options.commands
