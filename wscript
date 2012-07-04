@@ -20,12 +20,16 @@ def configure(conf):
     conf.check_waf_version(mini='1.6.11')
     conf.load('compiler_cxx')
 
+    conf.env['DEBUG_MODE'] = conf.options.debug
+
     # Debug Mode
-    if conf.options.debug:
-        conf.msg('Build mode', 'debug')
+    if conf.env['DEBUG_MODE']:
+        conf.msg('Build mode', 'debug', 'RED')
+        conf.env['PREFIX'] = 'install_debug'        # Install Debug Directory
         conf.env.append_value('DEFINES', ['__DEBUG__'])
     else:
-        conf.msg('Build mode', 'release')
+        conf.msg('Build mode', 'release', 'RED')
+    conf.msg('Install Prefix', conf.env['PREFIX'], 'RED')
 
     ### Linux ###
     if platform.startswith('linux'):
@@ -49,8 +53,6 @@ def configure(conf):
     conf.env.append_value('STLIB', [])
     conf.env.append_value('INCLUDES', ['.', 'src'])
 
-    conf.env['PREFIX'] = 'install_dir'     # Install Test Directory
-
     # Config Header
     conf.define(APPNAME.upper() + '_NAME', APPNAME)
     conf.define(APPNAME.upper() + '_VERSION', VERSION)
@@ -58,28 +60,37 @@ def configure(conf):
     conf.write_config_header('config.h')
 
 def build(bld):
-    # Install src/*.h
-    includeDir = bld.path.find_dir('src')
-    bld.install_files('${PREFIX}/include/' + LIBNAME + '/' + APPNAME, 
-        includeDir.ant_glob(['**/*.h']), cwd=includeDir, relative_trick=True)
+    if bld.env['DEBUG_MODE']:
+        source = bld.path.ant_glob('src/**/*.cpp') + ['test/main.cpp'] 
+        bld(
+            features = 'cxx cxxprogram',
+            source = source,
+            target = 'debug',
+            install_path = '${PREFIX}',
+        )
+    else:
+        # Install src/*.h
+        includeDir = bld.path.find_dir('src')
+        bld.install_files('${PREFIX}/include/' + LIBNAME + '/' + APPNAME, 
+            includeDir.ant_glob(['**/*.h']), cwd=includeDir, relative_trick=True)
 
-    # Install config.h
-    bld.install_files(
-        '${PREFIX}/include/' + LIBNAME + '/' + APPNAME, ['config.h'])
+        # Install config.h
+        bld.install_files(
+            '${PREFIX}/include/' + LIBNAME + '/' + APPNAME, ['config.h'])
 
-    source = bld.path.ant_glob('src/**/*.cpp')
-    bld(
-        features = 'cxx cxxstlib',
-        source = source,
-        target = APPNAME,
-        install_path = '${PREFIX}/lib/' + LIBNAME + '/' + APPNAME,
-    )
-    bld(
-        features = 'cxx cxxshlib',
-        source = source,
-        target = APPNAME,
-        install_path = '${PREFIX}/lib/' + LIBNAME + '/' + APPNAME,
-    )
+        source = bld.path.ant_glob('src/**/*.cpp')
+        bld(
+            features = 'cxx cxxstlib',
+            source = source,
+            target = APPNAME,
+            install_path = '${PREFIX}/lib/' + LIBNAME + '/' + APPNAME,
+        )
+        bld(
+            features = 'cxx cxxshlib',
+            source = source,
+            target = APPNAME,
+            install_path = '${PREFIX}/lib/' + LIBNAME + '/' + APPNAME,
+        )
 
 ### New Command ###############################################################
 from waflib.Context import Context
