@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <fstream>
 
 /*** Start bluekyulib namespace **********************************************/
 namespace bluekyulib
@@ -17,10 +18,10 @@ class CSV
 public:
     bool ReadFile(const std::string &fileName);
     bool WriteFile(const std::string &fileName);
-    void InsertLine(const int &index, const row_t &line);
-    void AppendLine(const row_t &line);
-    void PopLine(void);
-    void RemoveLine(const int &index);
+    void InsertRow(const int &index, const row_t &row);
+    void AppendRow(const row_t &row);
+    void PopRow(void);
+    void RemoveRow(const int &index);
 
 private:
     table_t table;
