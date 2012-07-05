@@ -1,3 +1,6 @@
+#ifndef _CSV_HPP_
+#define _CSV_HPP_
+
 #include <vector>
 #include <string>
 #include <fstream>
@@ -32,3 +35,5 @@ private:
 
 }
 /*** End bluekyulib namespace ************************************************/
+
+#endif
