@@ -8,12 +8,12 @@ namespace bluekyulib
 namespace csv
 {
 
-bool CSV::ReadFile(const std::string &fileName)
+bool CSV::ReadFile(const std::string& fileName)
 {
     return true;
 }
 
-bool CSV::WriteFile(const std::string &fileName)
+bool CSV::WriteFile(const std::string& fileName)
 {
     table_t::iterator tableIter;
     row_t::iterator rowIter;
@@ -32,7 +32,7 @@ bool CSV::WriteFile(const std::string &fileName)
     return true;
 }
 
-void CSV::InsertRow(const int &index, const row_t &row)
+void CSV::InsertRow(const int& index, const row_t& row)
 {
     table_t::iterator iter = table.begin();
 
@@ -42,7 +42,7 @@ void CSV::InsertRow(const int &index, const row_t &row)
     table.insert(iter, row);
 }
 
-void CSV::AppendRow(const row_t &row)
+void CSV::AppendRow(const row_t& row)
 {
     table.push_back(row);
 }
@@ -52,7 +52,7 @@ void CSV::PopRow(void)
     table.pop_back();
 }
 
-void CSV::RemoveRow(const int &index)
+void CSV::RemoveRow(const int& index)
 {
     table_t::iterator iter = table.begin();
 
