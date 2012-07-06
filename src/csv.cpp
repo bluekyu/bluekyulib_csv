@@ -1,12 +1,6 @@
 #include "csv.hpp"
 
-/*** Start bluekyulib namespace **********************************************/
-namespace bluekyulib
-{
-
-/*** Start csv namespace *****************************************************/
-namespace csv
-{
+namespace bluekyulib { namespace csv {
 
 bool CSV::ReadFile(const std::string& fileName)
 {
@@ -62,8 +56,5 @@ void CSV::RemoveRow(const int& index)
     table.erase(iter);
 }
 
-}
-/*** End csv namespace *******************************************************/
-
-}
-/*** End bluekyulib namespace ************************************************/
+}   // End csv namespace
+}   // End bluekyulib namespace

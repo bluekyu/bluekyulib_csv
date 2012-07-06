@@ -5,13 +5,8 @@
 #include <string>
 #include <fstream>
 
-/*** Start bluekyulib namespace **********************************************/
-namespace bluekyulib
-{
+namespace bluekyulib { namespace csv {
 
-/*** Start csv namespace *****************************************************/
-namespace csv
-{
 typedef std::string data_t;
 typedef std::vector<data_t> row_t;
 typedef std::vector<row_t> table_t;
@@ -30,10 +25,7 @@ private:
     table_t table;
 };
 
-}
-/*** End csv namespace *******************************************************/
-
-}
-/*** End bluekyulib namespace ************************************************/
+}   // End csv namespace
+}   // End bluekyulib namespace
 
 #endif

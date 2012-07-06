@@ -61,7 +61,7 @@ def build(bld):
     # Install src/*.h
     includeDir = bld.path.find_dir('src')
     bld.install_files('${PREFIX}/include/' + LIBNAME + '/' + APPNAME, 
-        includeDir.ant_glob(['**/*.h']), cwd=includeDir, relative_trick=True)
+        includeDir.ant_glob(['**/*.hpp']), cwd=includeDir, relative_trick=True)
 
     # Install config.h
     bld.install_files(
